@@ -1,0 +1,8 @@
+# mutt-trim
+This script removes any clutter of the quoted text when responding.
+To be used with mutt by adding
+
+```
+  set editor          = "autotrim %s; $EDITOR %s"
+```
+to your `~/.muttrc`.
