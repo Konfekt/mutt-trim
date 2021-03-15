@@ -1,13 +1,12 @@
 #!/usr/bin/perl
 #
-# "Beautify" quoted message and make it "ready-to-reply". Originally by Michael Velten.
+# Remove any clutter from the quoted message.
+# Originally named autotrim and written by Michael Velten.
 
 use utf8;
 
-# keep quotes nested up to 3rd level
-my $ind_max = 3;
-# # put 1 empty line between first and following quote
-# my $gap = 1;
+# keep quotes nested up to 5th level
+my $ind_max = 5;
 
 my $name     = '[[:alpha:]]+([\'`-][[:alpha:]]+|[.])*';
 my $fullname = '\b(' . $name . '[,]?\s+)*' . $name . '\b';
@@ -25,20 +24,20 @@ my @greetings = (
     'M(adame)\s+' . $fullname . '([,.]|\s*!)?',
     'M(onsieur)\s+' . $fullname . '([,.]|\s*!)?',
     '[Cc]her\s+' . $fullname . '([,.]|\s*!)?',
-    '[Cc]hère\s+' . $fullname . '([,.]|\s*!)?',
+    '[Cc]h[eè]re\s+' . $fullname . '([,.]|\s*!)?',
     '[Bb]onjour' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     '[Ss]alut' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     'Senhor(ita|a)?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     'Sra?\.?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
-    'Car(íssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
-    'Prezad(íssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
-    'Estimad(íssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
+    'Car([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
+    'Prezad([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
+    'Estimad([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     '[Bb]om [Dd]ia' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     '[Bb]oa ([Tt]arde|[Nn]oite)' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
-    '[Oo](i|lá|la)' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
+    '[Oo](i|l[aá])' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     '[Aa]l[ôo]' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     '[Hh]ola' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
-    'Se[ñ]or(ita|a)?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
+    'Se[nñ]or(ita|a)?' . '(\s+' . $fullname . ')?' . '([,.]|\s*!)?',
     );
 
 # Possible reply "greetouts" (regexes) (note that '> ' will be prefixed)
@@ -51,11 +50,11 @@ my @greetouts = (
     '(([[Bb]est|[Ll]ieb|[Ff]reundlich)e[rn] )?[Gg]ru([ß]|ss)([,.]|\s*!)?',
     '[Mm]it (([[Bb]est|[Ll]ieb|[Ff]reundlich)em )?[Gg]ru([ß]|ss)([,.]|\s*!)?',
     '([LV]|MF)G([,.]|\s*!)?',
-    '(([Tt]rès|[Bb]ien) )?([Cc]ordi|[Aa]mic)alement([,.]|\s*!)?',
-    '[Aa]miti[é]s?([,.]|\s*!)?',
+    '(([Tt]r[eè]s|[Bb]ien) )?([Cc]ordi|[Aa]mic)alement([,.]|\s*!)?',
+    '[Aa]miti[eé]s?([,.]|\s*!)?',
     '[Aa]tenciosamente([,.]|\s*!)?',
     '[Aa]tt([,.]|\s*!)?',
-    '[Aa]abraços?([,.]|\s*!)?',
+    '[Aa]bra[cç]os?([,.]|\s*!)?',
     '[Aa]tentamente([,.]|\s*!)?',
     '[Cc]ordialmente([,.]|\s*!)?',
     );
@@ -63,14 +62,11 @@ my @greetouts = (
 my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
 
 # my $saw_greeting = 0;
-# my $saw_leadin = 0;
 # my $saw_greetout = 0;
 my $saw_own_sig = 0;
-my $saw_blank_line = 0;
 my $inds_other_sig = 0;
 my $quote_header = 0;
 my $extra_pref = '';
-# my $prev_inds = 0;
 
 my (@mail, @purged_mail);
 
@@ -152,7 +148,7 @@ foreach my $line (@mail) {
   # }
 
 # Remove quoted filler lines
-  if ($line =~ /^>+ \s*(-*|_*|=*|\+*|#*|\**)$/) {
+  if ($line =~ /^>+ \s*[-_=+#*]+$/) {
     next LINE;
   }
 
