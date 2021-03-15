@@ -7,6 +7,8 @@ use utf8;
 
 # keep quotes nested up to 5th level
 my $ind_max = 5;
+# how many blank lines before next quote levels
+my $gap = 1;
 
 my $name     = '[[:alpha:]]+([\'`-][[:alpha:]]+|[.])*';
 my $fullname = '\b(' . $name . '[,]?\s+)*' . $name . '\b';
@@ -63,6 +65,8 @@ my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
 
 # my $saw_greeting = 0;
 # my $saw_greetout = 0;
+my $saw_blank_line = 0;
+my $prev_inds = 0;
 my $saw_own_sig = 0;
 my $inds_other_sig = 0;
 my $quote_header = 0;
@@ -152,9 +156,19 @@ foreach my $line (@mail) {
     next LINE;
   }
 
-# Insert $gap empty lines between different quote levels
-  # $line = "\n" x $gap . $line if $prev_inds < $inds;
-  # $prev_inds = $inds;
+# Insert $gap many empty lines between different quote levels
+  $line = "\n" x $gap . $line if $prev_inds < $inds;
+  $prev_inds = $inds;
+
+# Squeeze multiple blank lines
+  if ($line =~ /^>+ \s*$/) {
+    if ($saw_blank_line) {
+      next LINE;
+    }
+    $saw_blank_line = 1
+  } else {
+    $saw_blank_line = 0
+  }
 
 # Save purged line
   push(@purged_mail, $line);
