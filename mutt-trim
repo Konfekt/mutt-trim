@@ -157,7 +157,7 @@ foreach my $line (@mail) {
   }
 
 # Insert $gap many empty lines between different quote levels
-  $line = "\n" x $gap . $line if $prev_inds < $inds;
+  $line = "\n" x $gap . $line if $prev_inds != $inds;
   $prev_inds = $inds;
 
 # Squeeze multiple blank lines
