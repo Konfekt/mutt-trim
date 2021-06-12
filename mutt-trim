@@ -5,10 +5,10 @@
 
 use utf8;
 
-# keep quotes nested up to 5th level
+# keep nested quotes up to $ind_max-th level
 my $ind_max = 5;
-# how many blank lines before next quote levels
-my $gap = 1;
+# insert $gap many blank lines between different quote levels
+my $gap = 0;
 
 my $name     = '[[:alpha:]]+([\'`-][[:alpha:]]+|[.])*';
 my $fullname = '\b(' . $name . '[,]?\s+)*' . $name . '\b';
@@ -122,7 +122,7 @@ foreach my $line (@mail) {
   next LINE if $inds > $ind_max;
 
 # Remove other signatures
-  if ($line =~ /^>+ --\s?$/) {
+  if ($line =~ /^>+ -- $/) {
     $inds_other_sig = $inds;
   }
   if ($inds == $inds_other_sig) {
@@ -161,7 +161,7 @@ foreach my $line (@mail) {
   $prev_inds = $inds;
 
 # Squeeze multiple blank lines
-  if ($line =~ /^>+ \s*$/) {
+  if ($line =~ /^>+ \s*$/){
     if ($saw_blank_line) {
       next LINE;
     }
