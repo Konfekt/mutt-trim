@@ -59,6 +59,8 @@ my @greetouts = (
     '[Aa]bra[cç]os?([,.]|\s*!)?',
     '[Aa]tentamente([,.]|\s*!)?',
     '[Cc]ordialmente([,.]|\s*!)?',
+    'Many thanks([,.]|\s*!)?',
+    '[Th]hanks([,.]|\s*!)?',
     );
 
 my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
