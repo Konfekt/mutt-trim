@@ -47,6 +47,8 @@ my @greetouts = (
     '([Ww]ith )?(([Kk]ind|[Bb]est|[Ww]arm) )?([Rr]egards|[Ww]ishes)([,.]|\s*!)?',
     '[Bb]est([,.]|\s*!)?',
     '[Cc]heers([,.]|\s*!)?',
+    '[Mm]any thanks([,.]|\s*!)?',
+    '[Th]hanks([,.]|\s*!)?',
     '[Mm]it ([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich)en [Gg]r([ü]|ue)([ß]|ss)en([,.]|\s*!)?',
     '(([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich)e )?[Gg]r([ü]|ue)([ß]|ss)e([,.]|\s*!)?',
     '(([[Bb]est|[Ll]ieb|[Ff]reundlich)e[rn] )?[Gg]ru([ß]|ss)([,.]|\s*!)?',
@@ -59,8 +61,6 @@ my @greetouts = (
     '[Aa]bra[cç]os?([,.]|\s*!)?',
     '[Aa]tentamente([,.]|\s*!)?',
     '[Cc]ordialmente([,.]|\s*!)?',
-    'Many thanks([,.]|\s*!)?',
-    '[Th]hanks([,.]|\s*!)?',
     );
 
 my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
