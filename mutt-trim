@@ -112,7 +112,7 @@ foreach my $line (@mail) {
   }
 
   # remove last line if blank and last in citation level
-  if ($inds != $prev_inds && $saw_blank_line) {
+  if ($inds == 0 && $inds < $prev_inds && $saw_blank_line) {
     $prev_inds = $inds;
     pop @purged_mail;
   }
