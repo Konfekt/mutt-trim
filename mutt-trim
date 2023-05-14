@@ -174,8 +174,11 @@ foreach my $line (@mail) {
   if ($line =~ /^>+\s*$/){
     if ($saw_blank_line) {
       next LINE;
+    } else {
+      $saw_blank_line = 1;
+      # remove trailing blanks
+      $line =~ tr/ //ds;
     }
-    $saw_blank_line = 1
   } else {
     $saw_blank_line = 0
   }
