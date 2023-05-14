@@ -15,51 +15,51 @@ my $fullname = '\b(' . $name . '[,]?\s+)*' . $name . '\b';
 
 # Possible reply greetings (regexes) (note that '> ' will be prefixed)
 my @greetings = (
-  'Dear\s+' . $fullname . '\s*[,.!]?',
-  '[Hh](ello|i|ey)' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Sehr geehrter?\s+' . $fullname . '\s*[,.!]?',
-  'Lieber?\s+' . $fullname . '\s*[,.!]?',
-  'Guten Tag' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Hh]allo' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Mm]oin' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
+  'Dear',
+  '[Hh](ello|i|ey)',
+  'Sehr geehrter?',
+  'Lieber?',
+  'Guten (Tag|Morgen|Nachmittag|Abend)',
+  '[Hh]allo',
+  '[Mm]oin',
   '[Mm]esdames(,| et) [Mm]essieurs\s*[,.!]?',
-  'M(adame)\s+' . $fullname . '\s*[,.!]?',
-  'M(onsieur)\s+' . $fullname . '\s*[,.!]?',
-  '[Cc]her\s+' . $fullname . '\s*[,.!]?',
-  '[Cc]h[eè]re\s+' . $fullname . '\s*[,.!]?',
-  '[Bb]onjour' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Ss]alut' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Senhor(ita|a)?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Sra?\.?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Car([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Prezad([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Estimad([ií]ssim)?[ao]s?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Bb]om [Dd]ia' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Bb]oa ([Tt]arde|[Nn]oite)' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Oo](i|l[aá])' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Aa]l[ôo]' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  '[Hh]ola' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
-  'Se[nñ]or(ita|a)?' . '(\s+' . $fullname . ')?' . '\s*[,.!]?',
+  'M(adame)',
+  'M(onsieur)',
+  '[Cc]her',
+  '[Cc]h[eè]re',
+  '[Bb]onjour',
+  '[Ss]alut',
+  'Senhor(ita|a)?',
+  'Sra?\.?',
+  'Car([ií]ssim)?[ao]s?',
+  'Prezad([ií]ssim)?[ao]s?',
+  'Estimad([ií]ssim)?[ao]s?',
+  '[Bb]om [Dd]ia',
+  '[Bb]oa ([Tt]arde|[Nn]oite)',
+  '[Oo](i|l[aá])',
+  '[Aa]l[ôo]',
+  '[Hh]ola',
+  'Se[nñ]or(ita|a)?',
 );
 
 # Possible reply "greetouts" (regexes) (note that '> ' will be prefixed)
 my @greetouts = (
-  '([Ww]ith )?(([Kk]ind|[Bb]est|[Ww]arm) )?([Rr]egards|[Ww]ishes)\s*[,.!]?',
-  '[Bb]est\s*[,.!]?',
-  '[Cc]heers\s*[,.!]?',
-  '([Mm]any\s+)?[Tt]hanks\s*[,.!]?',
-  '[Mm]it ([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich)en [Gg]r([ü]|ue)([ß]|ss)en([,.!]|\s*!)?',
-  '(([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich)e )?[Gg]r([ü]|ue)([ß]|ss)e([,.!]|\s*!)?',
-  '(([[Bb]est|[Ll]ieb|[Ff]reundlich)e[rn] )?[Gg]ru([ß]|ss)\s*[,.!]?',
-  '[Mm]it (([[Bb]est|[Ll]ieb|[Ff]reundlich)em )?[Gg]ru([ß]|ss)\s*[,.!]?',
-  '([LV]|MF)G\s*[,.!]?',
-  '(([Tt]r[eè]s|[Bb]ien) )?([Cc]ordi|[Aa]mic)alement\s*[,.!]?',
-  '[Aa]miti[eé]s?\s*[,.!]?',
-  '[Aa]tenciosamente\s*[,.!]?',
-  '[Aa]tt\s*[,.!]?',
-  '[Aa]bra[cç]os?\s*[,.!]?',
-  '[Aa]tentamente\s*[,.!]?',
-  '[Cc]ordialmente\s*[,.!]?',
+  '([Ww]ith )?(([Kk]ind|[Bb]est|[Ww]arm) )?([Rr]egards|[Ww]ishes)',
+  '[Bb]est',
+  '[Cc]heers',
+  '([Mm]any\s+)?[Tt]hanks',
+  '[Mm]it ([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)en [Gg]r([ü]|ue)([ß]|ss)en',
+  '(([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)e )?[Gg]r([ü]|ue)([ß]|ss)e',
+  '(([[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)e[rn] )?[Gg]ru([ß]|ss)',
+  '[Mm]it (([[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)em )?[Gg]ru([ß]|ss)',
+  '([LV]|MF)G',
+  '(([Tt]r[eè]s|[Bb]ien) )?([Cc]ordi|[Aa]mic)alement',
+  '[Aa]miti[eé]s?',
+  '[Aa]tenciosamente',
+  '[Aa]tt',
+  '[Aa]bra[cç]os?',
+  '[Aa]tentamente',
+  '[Cc]ordialmente',
 );
 
 my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
@@ -148,6 +148,7 @@ foreach my $line (@mail) {
   # Remove quoted greeting
   # unless ($saw_greeting) {
   foreach my $greeting (@greetings) {
+    $greeting = '\s*' . $greeting . '(\s+' . $fullname . ')?' . '(\s*[,.!]+)?' . '\s*';
     if ($line =~ /^>+ $greeting$/) {
       # $saw_greeting = 1;
       next LINE;
@@ -158,6 +159,7 @@ foreach my $line (@mail) {
   # Remove quoted "greetout"
   # unless ($saw_greetout) {
   foreach my $greetout (@greetouts) {
+    $greetout = '\s*' . $greetout . '(\s*[,.!]+)?' . '\s*';
     if ($line =~ /^>+ $greetout$/) {
       # $saw_greetout = 1;
       next LINE;
@@ -186,7 +188,8 @@ foreach my $line (@mail) {
   # Insert $gap many empty lines between different quote levels
   $line = "\n" x $gap . $line if $prev_inds != $inds;
 
-  $prev_inds = $inds;
+  $prev_inds = $inds ;
+
   # Save purged line
   push(@purged_mail, $line);
 }
