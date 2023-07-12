@@ -17,6 +17,7 @@ my $fullname = '\b(' . $name . '[,]?\s+)*' . $name . '\b';
 my @greetings = (
   'Dear',
   '[Hh](ello|i|ey)',
+  '[Gg]ood ([Mm]orning|[Aa]fternoon|[Ee]vening)',
   'Sehr geehrter?',
   'Lieber?',
   'Guten (Tag|Morgen|Nachmittag|Abend)',
