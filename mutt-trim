@@ -65,8 +65,8 @@ my @greetouts = (
 
 my $word = '[[:alpha:]]+([\'`-][[:alpha:]]+)*';
 
-# my $saw_greeting = 0;
-# my $saw_greetout = 0;
+my $saw_greeting = 0;
+my $saw_greetout = 0;
 my $saw_blank_line = 0;
 my $prev_inds = 0;
 my $saw_own_sig = 0;
@@ -147,26 +147,26 @@ foreach my $line (@mail) {
   }
 
   # Remove quoted greeting
-  # unless ($saw_greeting) {
-  foreach my $greeting (@greetings) {
-    $greeting = '\s*' . $greeting . '(\s+' . $fullname . ')?' . '(\s*[,.!]+)?' . '\s*';
-    if ($line =~ /^>+ $greeting$/) {
-      # $saw_greeting = 1;
-      next LINE;
+  unless ($saw_greeting) {
+    foreach my $greeting (@greetings) {
+      $greeting = '\s*' . $greeting . '(\s+' . $fullname . ')?' . '(\s*[,.!]+)?' . '\s*';
+      if ($line =~ /^>+ $greeting$/) {
+        $saw_greeting = 1;
+        next LINE;
+      }
     }
   }
-  # }
 
   # Remove quoted "greetout"
-  # unless ($saw_greetout) {
-  foreach my $greetout (@greetouts) {
-    $greetout = '\s*' . $greetout . '(\s*[,.!]+)?' . '\s*';
-    if ($line =~ /^>+ $greetout$/) {
-      # $saw_greetout = 1;
-      next LINE;
+  unless ($saw_greetout) {
+    foreach my $greetout (@greetouts) {
+      $greetout = '\s*' . $greetout . '(\s*[,.!]+)?' . '\s*';
+      if ($line =~ /^>+ $greetout$/) {
+        $saw_greetout = 1;
+        next LINE;
+      }
     }
   }
-  # }
 
   # Remove quoted filler lines
   if ($line =~ /^>+ \s*[-_=+#*]+$/) {
