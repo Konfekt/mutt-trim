@@ -11,9 +11,9 @@ my $ind_max = 5;
 my $gap = 0;
 
 # Precompile regex patterns
-my $name_regex     = qr/[[:alpha:]]+([\'`-][[:alpha:]]+|[.])*/;
-my $fullname_regex = qr/\b($name_regex[, ]?\s+)*$name_regex\b/;
-my $word_regex     = qr/[[:alpha:]]+([\'`-][[:alpha:]]+)*/;
+my $name_regex     = qr/[[:alpha:]]+(?:[\'`-][[:alpha:]]+|[.])*/;
+my $fullname_regex = qr/\b(?:$name_regex[, ]?\s+)*$name_regex\b/;
+my $word_regex     = qr/[[:alpha:]]+(?:[\'`-][[:alpha:]]+)*/;
 
 my @greetings_regexes = map { qr/$_/ } (
   'Dear',
@@ -51,8 +51,8 @@ my @greetouts_regexes = map { qr/$_/ } (
   '([Mm]any\s+)?[Tt]hanks',
   '[Mm]it ([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)en [Gg]r([ü]|ue)([ß]|ss)en',
   '(([Vv]iel|[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)e )?[Gg]r([ü]|ue)([ß]|ss)e',
-  '(([[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)e[rn] )?[Gg]ru([ß]|ss)',
-  '[Mm]it (([[Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)em )?[Gg]ru([ß]|ss)',
+  '(([Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)e[rn] )?[Gg]ru([ß]|ss)',
+  '[Mm]it (([Bb]est|[Ll]ieb|[Ff]reundlich|[Hh]erzlich)em )?[Gg]ru([ß]|ss)',
   '([LV]|MF)G',
   '(([Tt]r[eè]s|[Bb]ien) )?([Cc]ordi|[Aa]mic)alement',
   '[Aa]miti[eé]s?',
@@ -62,6 +62,16 @@ my @greetouts_regexes = map { qr/$_/ } (
   '[Aa]tentamente',
   '[Cc]ordialmente',
 );
+
+my @greeting_line_regexes = map {
+  my $re = $_;
+  qr/^>+\s*$re(?:\s+$fullname_regex)?\s*[,.!]*\s*$/
+} @greetings_regexes;
+
+my @greetout_line_regexes = map {
+  my $re = $_;
+  qr/^>+\s*$re(?:\s*[,.!]+)?\s*$/
+} @greetouts_regexes;
 
 my $saw_greeting = 0;
 my $saw_greetout = 0;
@@ -75,19 +85,20 @@ my $extra_pref = '';
 my (@mail, @purged_mail);
 
 my $msg = shift;
-die "Usage: $0 MAIL" unless $msg;
-open(MAIL, "+<:encoding(UTF-8)", $msg)  or die "$0: Can't open $msg: $!";
-push(@mail, $_) while <MAIL>;   # Read whole mail
+die "Usage: $0 MAIL" unless defined $msg && length $msg;
+open(my $MAIL, "+<:encoding(UTF-8)", $msg)  or die "$0: Can't open $msg: $!";
+push(@mail, $_) while <$MAIL>;
 
 # Precompile regex patterns outside the loop
-my $quote_header_regex = qr/^>+ [-_=━]{3,}\s*($word)?(\s+$word)*\s*[-_=━]{3,}$/;
+my $quote_header_regex = qr/^>+\s*[-_=━]{3,}\s*(?:$word_regex(?:\s+$word_regex)*)?\s*[-_=━]{3,}$/;
+my $outlook_header_kv_regex = qr/^>+\s*(?:[-*]\s*)?$word_regex(?:\s+$word_regex)*\s*:\s+/;
 my $signature_regex = qr/^--\s?$/;
-my $other_signature_regex = qr/^>+ --\s?$/;
-my $filler_line_regex = qr/^>+ \s*[-_=+#*]+$/;
+my $other_signature_regex = qr/^>+\s*--\s?$/;
+my $filler_line_regex = qr/^>+\s*[-_=+#*]+$/;
 my $blank_line_regex = qr/^>+\s*$/;
 
 # Process whole mail
-foreach my $line (@mail) {
+LINE: foreach my $line (@mail) {
   my $inds = 0;
   # count indent level
   if ($line =~ /^>/) {
@@ -103,10 +114,10 @@ foreach my $line (@mail) {
     # prepend additional '>' for each Outlook quote header
     if ($line =~ $quote_header_regex) {
       $quote_header = 1;
-      next;
+      next LINE;
     }
     # first line after Outlook quote header that does not start with ...:
-    if ($quote_header == 1 && $line !~ /^>+ ([-*]\s*)?$word(\s+$word)*\s*:\s+/) {
+    if ($quote_header == 1 && $line !~ $outlook_header_kv_regex) {
       $extra_pref = '>' . $extra_pref;
       $quote_header = 0;
     }
@@ -125,62 +136,61 @@ foreach my $line (@mail) {
   # Treat non-quoted lines as is
   if ($inds == 0) {
     push(@purged_mail, $line);
-    next;
+    next LINE;
   }
 
   # Keep all lines after my own signature unmodified
   if ($line =~ $signature_regex || $saw_own_sig) {
     $saw_own_sig = 1;
     push(@purged_mail, $line);
-    next;
+    next LINE;
   }
 
   # skip line if number of '>'s is greater than $ind_max
   if ($inds > $ind_max) {
-    next;
+    next LINE;
   }
 
   # Remove other signatures
   if ($line =~ $other_signature_regex) {
     $inds_other_sig = $inds;
+    next LINE;
   }
   if ($inds == $inds_other_sig) {
-    next;
+    next LINE;
   } else {
     $inds_other_sig = 0;
   }
 
   # Remove quoted greeting
   unless ($saw_greeting) {
-    foreach my $greeting (@greetings) {
-      $greeting = '\s*' . $greeting . '(\s+' . $fullname . ')?' . '(\s*[,.!]+)?' . '\s*';
-      if ($line =~ /^>+ $greeting$/) {
+    foreach my $greeting_re (@greeting_line_regexes) {
+      if ($line =~ $greeting_re) {
         $saw_greeting = 1;
-        next;
+        next LINE;
       }
     }
   }
 
   # Remove quoted "greetout"
   unless ($saw_greetout) {
-    foreach my $greetout (@greetouts) {
-      $greetout = '\s*' . $greetout . '(\s*[,.!]+)?' . '\s*';
-      if ($line =~ /^>+ $greetout$/) {
+    foreach my $greetout_re (@greetout_line_regexes) {
+      if ($line =~ $greetout_re) {
         $saw_greetout = 1;
-        next;
+        next LINE;
       }
     }
   }
 
   # Remove quoted filler lines
   if ($line =~ $filler_line_regex) {
-    next;
+    next LINE;
   }
 
   # Squeeze multiple blank lines
   if ($line =~ $blank_line_regex) {
     if ($saw_blank_line) {
-      next;
+      next LINE;
     } else {
       $saw_blank_line = 1;
       # remove trailing blanks
@@ -199,7 +209,7 @@ foreach my $line (@mail) {
 }
 
 # Overwrite original mail with purged mail
-truncate(MAIL, 0);
-seek(MAIL, 0, 0);
-print MAIL @purged_mail;
-close(MAIL);
+truncate($MAIL, 0) or die "$0: truncate failed for $msg: $!";
+seek($MAIL, 0, 0) or die "$0: seek failed for $msg: $!";
+print {$MAIL} @purged_mail;
+close($MAIL) or die "$0: close failed for $msg: $!";
